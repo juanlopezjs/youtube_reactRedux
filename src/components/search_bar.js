@@ -1,14 +1,11 @@
 import React, {Component} from 'react';
+import { connect } from 'react-redux';
+import searchInput from '../actions/action_serachBar';
 
 class SerchBar extends Component {
 
-    constructor(props){
-        super(props);
-        this.state = {term: ''};
-    }
-
     onInputChange(term){
-        this.setState({ term });
+        this.props.searchInput(term);
         this.props.onSearchTermChange(term);
     }
 
@@ -18,7 +15,7 @@ class SerchBar extends Component {
                 <input
                     placeholder="Buscar"
                     className="form-control"
-                    value={this.state.term} 
+                    value={this.props.term} 
                     onChange={event => this.onInputChange(event.target.value)} />
                 <div className="input-group-append">
                     <button className="btn btn-secondary" type="button">
@@ -30,4 +27,15 @@ class SerchBar extends Component {
     }
 }
 
-export default SerchBar;
+const mapStateToProps = (state) => {
+    return {
+        term: state.search.term
+    }
+}
+  
+export default connect(
+    mapStateToProps, 
+    {
+        searchInput
+    }
+)(SerchBar);

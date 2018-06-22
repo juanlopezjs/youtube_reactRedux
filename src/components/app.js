@@ -1,45 +1,53 @@
 import _ from 'lodash';
 import React, { Component } from 'react';
-import YTSearch from 'youtube-api-search';
+import { connect } from 'react-redux';
+
+/*Components*/
 import SerchBar from './search_bar';
 import VideoList from './video_list';
 import VideoDetail from './video_detail';
+/*Actions*/
+import { videoSearch, videoSelected } from '../actions/action_searchVideo'
 
-const API_KEY = 'AIzaSyDpNZ-Z75Se87VP6awxtqG9N1mJZG9x0Oo';
 
+class App extends Component {
 
-export default class App extends Component {
   constructor(props){
     super(props);
+    props.videoSearch('imbanaco');
 
-    this.state = { 
-      videos: [],
-      selectedVideo: null 
-    };
-
-    this.videoSearch('imbanaco');
-
-  }
-
-  videoSearch(term){
-    YTSearch({key: API_KEY, term: term}, (videos) => this.setState({videos, selectedVideo: videos[0]})); 
   }
 
   render() {
-    const videoSearch = _.debounce((term) => { this.videoSearch(term) }, 300);
-    
+    const searchVideo = _.debounce((term) => { this.props.videoSearch(term) }, 300);
+
     return (
       <div className="container-fluid">      
         <div className="navbar navbar-expand-md navbar-danger fixed-top bg-danger justify-content-center shadow p-3 mb-5 rounded">
-          <SerchBar onSearchTermChange={ videoSearch }/>
+          <SerchBar onSearchTermChange={ searchVideo }/>
         </div>
         <div className="d-flex flex-row">
-          <VideoDetail video={this.state.selectedVideo}/>
+          <VideoDetail video={this.props.selectedVideo}/>
           <VideoList 
-            onVideoSelect={selectedVideo => this.setState({selectedVideo})}
-            videos={this.state.videos}/>
+            onVideoSelect={selectedVideo => this.props.videoSelected(selectedVideo)}
+            videos={this.props.videos}/>
         </div>
       </div>
     );
   }
 }
+
+const mapStateToProps = (state) => {
+  return {
+    videos: state.video.videos,
+    selectedVideo: state.video.selectedVideo
+  }
+}
+
+export default connect(
+  mapStateToProps, 
+  {
+    videoSearch,
+    videoSelected
+  }
+)(App);
