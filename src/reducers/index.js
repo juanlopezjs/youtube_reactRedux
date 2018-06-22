@@ -10,12 +10,7 @@ const reducer = combineReducers({
   search
 });
 
-const logger = store => next => action => {
-  let result = next(action)
-  return result
-}
-
-const middlewares = applyMiddleware(logger, thunk);
+const middlewares = applyMiddleware(thunk);
 
 const store = createStore(
   reducer,
